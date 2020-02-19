@@ -117,8 +117,12 @@ class BarberApp(MDApp):
                     Builder.load_file(kv_file)
 
     def registration(self):
-        if not self.screen.current_screen.ids['tel_text'].text:
+
+        PhoneNumber = self.screen.current_screen.ids['tel_text'].text
+        if  PhoneNumber == '+7(':
             toast('Телефон не может быть пустым')
+        elif len(PhoneNumber) < 14:
+            toast('Ошибочный формат телефона')
         else:
             pass
 
