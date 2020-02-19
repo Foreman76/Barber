@@ -105,6 +105,7 @@ class BarberApp(MDApp):
 
         return self.screen
 
+
     def load_all_kv_files(self, directory_kv_files):
         for kv_file in os.listdir(directory_kv_files):
             kv_file = os.path.join(directory_kv_files, kv_file)
