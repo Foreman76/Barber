@@ -120,7 +120,7 @@ class BarberApp(MDApp):
         if not self.screen.current_screen.ids['tel_text'].text:
             toast('Телефон не может быть пустым')
         else:
-            
+            pass
 
     
 
