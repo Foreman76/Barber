@@ -1,0 +1,13 @@
+# -*- coding: utf-8 -*-
+
+<basescreen>
+
+    FloatLayout:
+
+        MDLabel:
+
+            pos_hint: {"center_y": .5, "center_x": .5}
+            text: 'basescreen'
+        MDRoundFlatButton:
+            text: 'NextScreen'
+            on_press: root.manager.current = 'login' 

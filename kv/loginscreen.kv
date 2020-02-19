@@ -1,0 +1,46 @@
+# -*- coding: utf-8 -*-
+
+<loginscreen>
+
+    canvas:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: app.directory+"/LoginFon.jpg"
+
+    MDToolbar:
+        id: action_bar
+        background_color: app.theme_cls.primary_color
+        title: app.title
+        left_action_items: [['menu', lambda x: 3]]
+        elevation: 10
+        md_bg_color: app.theme_cls.primary_color
+        pos_hint: {"top": 1}
+        
+
+    BoxLayout:
+
+        orientation: 'vertical'
+        spacing: dp(10)
+        size_hint: (0.6, 0.2) 
+        pos_hint: {'center_x': .5, "center_y": .5}
+
+        
+
+        MyTextField:
+            id: tel_text
+            icon_left: "phone"
+            hint_text: "Телефон"
+            font_size: '18sp'
+            size_hint_x: .9
+            pos_hint: {"center_x": .5}
+            normal_color: 1, 1, 1, 1
+            color_active: 1, 1, 1, 1
+            text: '+7(' 
+            
+
+        MDFillRoundFlatIconButton:
+            icon: "account"
+            text: 'Регистрация'   
+            size_hint_x: 1
+            on_press: app.registration()
