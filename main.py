@@ -11,6 +11,9 @@ from kivy.logger import PY2
 from kivymd.theming import ThemeManager
 from kivymd.toast.kivytoast.kivytoast import toast
 import re
+#from kivy.network.urlrequest import UrlRequest
+import requests
+
 
 class basescreen(Screen):
     pass
@@ -96,11 +99,9 @@ class BarberApp(MDApp):
         sm.add_widget(loginscreen(name='login'))
         self.screen = sm
         
-        if not self.PhoneNumber:
-            mytext = 'phone empty' # Экран логина
+        if not self.Token:
             self.screen.current = 'login'
         else:
-            mytext = 'phone not empty'
             self.screen.current = 'base'
 
         return self.screen
@@ -119,14 +120,25 @@ class BarberApp(MDApp):
     def registration(self):
 
         PhoneNumber = self.screen.current_screen.ids['tel_text'].text
-        if  PhoneNumber == '+7(':
-            toast('Телефон не может быть пустым')
-        elif len(PhoneNumber) < 14:
-            toast('Ошибочный формат телефона')
+        if  PhoneNumber == '+7(' or len(PhoneNumber) < 14:
+            self.say_error('Введите правильный номер телефона') 
         else:
-            pass
+            header = {'Content-type':'application/Json'}
+            params = {'phone':PhoneNumber}
+            resp = requests.post('http://127.0.0.1:8000/api/v1/register/', headers=header, json=params)
 
-    
+            if resp.status_code == 200:
+                user_info = resp.json()
+                keyvalue = {'token':user_info['token'], 'phonenumber':user_info['phone'], 'firstname':user_info['nUser']}
+                self.write_value_in_config(keyvalue)
+                self.screen.current = 'base'
+            else: 
+                self.say_error('Ошибка')    
+
+    def say_error(self, errText):
+        toast(errText)
+        
+
 
 if __name__ == '__main__':
     BarberApp().run()
