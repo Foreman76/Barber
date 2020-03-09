@@ -1,0 +1,27 @@
+# -*- coding: utf-8 -*-
+
+
+#:import BaseScreen baseclas.basescreen.BaseScreen
+#:import LoginScreen baseclas.loginscreen.LoginScreen
+
+<StartScreen>
+
+    MDToolbar:
+        id: action_bar
+        background_color: app.theme_cls.primary_color
+        title: app.title
+        left_action_items: [['menu', lambda x: 3]]
+        elevation: 10
+        md_bg_color: app.theme_cls.primary_color
+        pos_hint: {"top": 1}
+        
+    ScreenManager:
+        id: manager
+        size_hint_y: None
+        height: root.height - action_bar.height
+
+        LoginScreen:
+            id: login
+
+        BaseScreen:
+            id: base    

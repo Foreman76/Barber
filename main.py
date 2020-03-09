@@ -13,14 +13,8 @@ from kivymd.toast.kivytoast.kivytoast import toast
 import re
 #from kivy.network.urlrequest import UrlRequest
 import requests
+from baseclas.startscreen import StartScreen
 
-
-class basescreen(Screen):
-    pass
-    
-
-class loginscreen(Screen):
-    pass
 
 class MyTextField(MDTextFieldRound):
     pattern = re.compile('[^0-9]')
@@ -48,7 +42,7 @@ class BarberApp(MDApp):
     PhoneNumber = StringProperty('')
     Token = StringProperty('')
     FirstName = StringProperty('')
-    
+    url_register = StringProperty('')
 
 
     def __init__(self, **kvargs):
@@ -59,7 +53,8 @@ class BarberApp(MDApp):
 
         self.window = Window
         self.config = ConfigParser()    
-        
+        self.url_register = 'http://127.0.0.1:8000/api/v1/register/'
+        self.manager = None
         
 
     #def get_application_config(self):
@@ -91,21 +86,20 @@ class BarberApp(MDApp):
     def build(self):
         
         self.load_all_kv_files(os.path.join(self.directory, 'kv'))
-        self.read_value_from_config()
+        #self.read_value_from_config()
         self.theme_cls = ThemeManager()
         self.theme_cls.primary_palette = 'BlueGray'
-        sm = ScreenManager()
-        sm.add_widget(basescreen(name='base'))
-        sm.add_widget(loginscreen(name='login'))
-        self.screen = sm
+        self.screen = StartScreen()
+        self.manager = self.screen.ids.manager
         
+        '''
         if not self.Token:
             self.screen.current = 'login'
         else:
             self.screen.current = 'base'
-
+        '''
         return self.screen
-
+        
 
     def load_all_kv_files(self, directory_kv_files):
         for kv_file in os.listdir(directory_kv_files):
@@ -119,19 +113,19 @@ class BarberApp(MDApp):
 
     def registration(self):
 
-        PhoneNumber = self.screen.current_screen.ids['tel_text'].text
+        PhoneNumber = self.manager.current_screen.ids.tel_text.text
         if  PhoneNumber == '+7(' or len(PhoneNumber) < 14:
             self.say_error('Введите правильный номер телефона') 
         else:
             header = {'Content-type':'application/Json'}
             params = {'phone':PhoneNumber}
-            resp = requests.post('http://127.0.0.1:8000/api/v1/register/', headers=header, json=params)
+            resp = requests.post(self.url_register, headers=header, json=params)
 
             if resp.status_code == 200:
                 user_info = resp.json()
                 keyvalue = {'token':user_info['token'], 'phonenumber':user_info['phone'], 'firstname':user_info['nUser']}
                 self.write_value_in_config(keyvalue)
-                self.screen.current = 'base'
+                self.manager.current = 'base'
             else: 
                 self.say_error('Ошибка')    
 
