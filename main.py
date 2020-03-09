@@ -86,18 +86,17 @@ class BarberApp(MDApp):
     def build(self):
         
         self.load_all_kv_files(os.path.join(self.directory, 'kv'))
-        #self.read_value_from_config()
+        self.read_value_from_config()
         self.theme_cls = ThemeManager()
         self.theme_cls.primary_palette = 'BlueGray'
         self.screen = StartScreen()
         self.manager = self.screen.ids.manager
         
-        '''
-        if not self.Token:
-            self.screen.current = 'login'
-        else:
-            self.screen.current = 'base'
-        '''
+        
+        if self.Token:
+            self.manager.current_screen.ids.btn_reg.text = 'Войти'
+            self.manager.current_screen.ids.tel_text.text = self.PhoneNumber
+
         return self.screen
         
 
@@ -111,28 +110,38 @@ class BarberApp(MDApp):
                 else:
                     Builder.load_file(kv_file)
 
-    def registration(self):
+    def registration(self, btn_text):
 
-        PhoneNumber = self.manager.current_screen.ids.tel_text.text
-        if  PhoneNumber == '+7(' or len(PhoneNumber) < 14:
-            self.say_error('Введите правильный номер телефона') 
+        if btn_text == 'Войти':
+            self.manager.current = 'base'
+            #добавить функцию обновления данных пользователя 'Имени' 
+            self.change_title_actionbar('Новости')
+
         else:
-            header = {'Content-type':'application/Json'}
-            params = {'phone':PhoneNumber}
-            resp = requests.post(self.url_register, headers=header, json=params)
+            PhoneNumber = self.manager.current_screen.ids.tel_text.text
+            if  PhoneNumber == '+7(' or len(PhoneNumber) < 14:
+                self.say_user('Введите правильный номер телефона') 
+            else:
+                header = {'Content-type':'application/Json'}
+                params = {'phone':PhoneNumber}
+                resp = requests.post(self.url_register, headers=header, json=params)
 
-            if resp.status_code == 200:
-                user_info = resp.json()
-                keyvalue = {'token':user_info['token'], 'phonenumber':user_info['phone'], 'firstname':user_info['nUser']}
-                self.write_value_in_config(keyvalue)
-                self.manager.current = 'base'
-            else: 
-                self.say_error('Ошибка')    
+                if resp.status_code == 200:
+                    user_info = resp.json()
+                    keyvalue = {'token':user_info['token'], 'phonenumber':user_info['phone'], 'firstname':user_info['nUser']}
+                    self.write_value_in_config(keyvalue)
+                    self.manager.current = 'base'
+                else: 
+                    self.say_user('Ошибка')    
 
-    def say_error(self, errText):
+    def say_user(self, errText):
         toast(errText)
         
-
+    def change_title_actionbar(self, text_title):
+        if self.manager.current == 'base':
+            self.screen.ids.action_bar.title = 'Новости'
+        elif self.manager.current == 'login': 
+            self.screen.ids.action_bar.title = self.title   
 
 if __name__ == '__main__':
     BarberApp().run()

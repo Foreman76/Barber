@@ -32,7 +32,8 @@
             
 
         MDFillRoundFlatIconButton:
+            id: btn_reg
             icon: "account"
             text: 'Регистрация'   
             size_hint_x: 1
-            on_press: app.registration()
+            on_press: app.registration(self.text)

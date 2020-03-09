@@ -3,12 +3,19 @@
 <BaseScreen>:
     name: 'base'
 
-    FloatLayout:
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: dp(5)
 
-        MDLabel:
+        ScrollView:
+        id: scroll
+        size_hint: 1, 1
+        do_scroll_x: False
 
-            pos_hint: {"center_y": .5, "center_x": .5}
-            text: 'basescreen'
-        MDRoundFlatButton:
-            text: 'NextScreen'
-            on_press: root.manager.current = 'login' 
+        GridLayout:
+            id: grid_card
+            cols: 1
+            spacing: dp(5)
+            padding: dp(5)
+            size_hint_y: None
+            height: self.minimum_height
