@@ -5,7 +5,7 @@ from kivymd.uix.textfield import MDTextFieldRound
 from kivy.lang import Builder
 from kivy.config import ConfigParser
 from kivy.properties import StringProperty
-from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import ScreenManager, Screen, FallOutTransition, RiseInTransition
 from kivy.core.window import Window
 from kivy.logger import PY2
 from kivymd.theming import ThemeManager
@@ -13,7 +13,11 @@ from kivymd.toast.kivytoast.kivytoast import toast
 import re
 #from kivy.network.urlrequest import UrlRequest
 import requests
+from kivy.network.urlrequest import UrlRequest
 from baseclas.startscreen import StartScreen
+import json
+from kivymd.uix.card import MDCardPost
+import sys
 
 
 class MyTextField(MDTextFieldRound):
@@ -54,6 +58,8 @@ class BarberApp(MDApp):
         self.window = Window
         self.config = ConfigParser()    
         self.url_register = 'http://127.0.0.1:8000/api/v1/register/'
+        self.url_listnews = 'http://127.0.0.1:8000/api/v1/getlistnewsuser/'
+        self.url_userinfo = 'http://127.0.0.1:8000/api/v1/getuserinfo/'
         self.manager = None
         
 
@@ -89,8 +95,10 @@ class BarberApp(MDApp):
         self.read_value_from_config()
         self.theme_cls = ThemeManager()
         self.theme_cls.primary_palette = 'BlueGray'
+        #self.theme_cls.theme_style = "Dark"
         self.screen = StartScreen()
         self.manager = self.screen.ids.manager
+        self.manager.transition = RiseInTransition()
         
         
         if self.Token:
@@ -113,10 +121,8 @@ class BarberApp(MDApp):
     def registration(self, btn_text):
 
         if btn_text == 'Войти':
-            self.manager.current = 'base'
             #добавить функцию обновления данных пользователя 'Имени' 
-            self.change_title_actionbar('Новости')
-
+            self.toggle_base_screen()           
         else:
             PhoneNumber = self.manager.current_screen.ids.tel_text.text
             if  PhoneNumber == '+7(' or len(PhoneNumber) < 14:
@@ -131,6 +137,9 @@ class BarberApp(MDApp):
                     keyvalue = {'token':user_info['token'], 'phonenumber':user_info['phone'], 'firstname':user_info['nUser']}
                     self.write_value_in_config(keyvalue)
                     self.manager.current = 'base'
+                    self.change_title_actionbar('Новости')
+                    self.get_list_news()
+                    
                 else: 
                     self.say_user('Ошибка')    
 
@@ -139,9 +148,55 @@ class BarberApp(MDApp):
         
     def change_title_actionbar(self, text_title):
         if self.manager.current == 'base':
-            self.screen.ids.action_bar.title = 'Новости'
+            self.screen.ids.action_bar.title = text_title
         elif self.manager.current == 'login': 
-            self.screen.ids.action_bar.title = self.title   
+            self.screen.ids.action_bar.title = self.title
+        elif self.manager.current == 'order': 
+            self.screen.ids.action_bar.title = text_title      
+
+    def get_list_news(self):
+        header = {'Content-type':'application/Json', 'Authorization':'Token '+self.Token}
+        body   = {}
+        resp = UrlRequest(self.url_listnews, method='POST', req_headers=header, on_success=self.success_listnews, on_error=self.error_listnews)
+        f=0
+    def success_listnews(self, request, result):
+        instance_grid = self.manager.current_screen.ids.grid_card
+        for news in result:
+            instance_grid.add_widget(
+                MDCardPost(
+                    swipe=True,
+                    text_post=news['bTextNews']))
+
+    def error_listnews(self, *args):
+        a=0    
+
+    def get_user_info(self):
+        pass
+    def get_user_orders(self):
+        pass
+    def create_user_order(self):
+        pass
+    def get_list_service(self):
+        pass
+    def get_list_masters(self):
+        pass   
+
+    def sys_exit(self):
+        sys.exit(0)    
+
+    def sm_on_enter(self):
+        if self.manager.current == 'base':
+            self.screen.ids.action_bar.right_action_items = [['account-edit-outline', lambda x: self.toggle_order_screen()], ['exit-to-app', lambda x: self.sys_exit()]]
+        elif self.manager.current == 'order':
+            self.screen.ids.action_bar.right_action_items = [['arrow-left', lambda x: self.toggle_base_screen()], ['exit-to-app', lambda x: self.sys_exit()]]   
+
+    def toggle_base_screen(self):
+        self.manager.current = 'base'
+        self.change_title_actionbar('Новости')
+        self.get_list_news()           
+    def toggle_order_screen(self):
+        self.manager.current = 'order'
+        self.change_title_actionbar('Запись к мастеру...')
 
 if __name__ == '__main__':
     BarberApp().run()
