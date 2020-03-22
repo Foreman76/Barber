@@ -1,0 +1,47 @@
+# -*- coding: utf-8 -*-
+
+#:import Tab baseclas.tabs.Tab
+
+<Tab>:
+
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: dp(5)
+
+        ScrollView:
+            id: scroll
+            size_hint: 1, 1
+            do_scroll_x: False
+
+            MDList:
+                id: common_list
+
+<TabTimeTable>:
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: dp(5)
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(30)
+            spaicing: dp(5)
+            MDLabel:
+                id: text_date
+                text: ''   
+                font_style: 'H6'
+                halign: 'center'
+                on_touch_down: app.update_date()
+
+        ScrollView:
+            id: scroll
+            size_hint: 1, 1
+            do_scroll_x: False
+
+            MDList:
+                id: common_list
+
+
+<BarberTwoLineIconListItem>:
+    IconLeftWidget:
+        icon: root.licon
+    

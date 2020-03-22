@@ -1,0 +1,34 @@
+# -*- coding: utf-8 -*-
+
+<CardNews>
+    orientation: "vertical"
+    size_hint_y: None
+    height: self.minimum_height
+    padding: "10dp"
+    spacing: "20dp"
+    
+
+    BoxLayout:
+        size_hint_y: None
+        height: dp(80)
+
+        FitImage:
+            source: app.directory+"/logonews.png"
+
+    MDLabel:
+        id: ltitle
+        text: root.text_title
+        theme_text_color: "Primary"
+        font_style: 'H6'
+        size_hint_y: None
+        height: self.texture_size[1]
+
+    MDSeparator:
+        height: "1dp"
+
+    MDLabel:
+        id: lbody
+        text: root.text_body
+        size_hint_y: None
+        theme_text_color: "Secondary"
+        height: self.texture_size[1]

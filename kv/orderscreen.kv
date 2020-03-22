@@ -2,3 +2,19 @@
 
 <OrderScreen>:
     name: 'order'
+    
+    MDTabs:
+        id: order_tabs
+        on_tab_switch: app.on_tab_switch(*args)
+
+        Tab:
+            id: master
+            text: "Мастера"
+
+        Tab:
+            id: service
+            text: 'Услуги'
+
+        TabTimeTable:
+            id: timetable
+            text: 'Расписание'        
