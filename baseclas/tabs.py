@@ -6,5 +6,8 @@ from kivy.uix.floatlayout import FloatLayout
 class Tab(FloatLayout, MDTabsBase):
     pass
 
-class TabTimeTable(FloatLayout, MDTabsBase):
+class TabMasterDate(FloatLayout, MDTabsBase):
     pass
+
+
+

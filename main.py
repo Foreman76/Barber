@@ -1,4 +1,13 @@
 # -*- coding: utf8 -*-
+'''
+
+= ['Primary', 'Secondary', 'Background', 'Surface', 'Error', 'On_Primary', 'On_Secondary', 'On_Background', 'On_Surface', 'On_Error']
+
+'''
+
+
+
+
 import os
 from kivymd.app import MDApp
 from kivymd.uix.textfield import MDTextFieldRound
@@ -11,31 +20,81 @@ from kivy.logger import PY2
 from kivymd.theming import ThemeManager
 from kivymd.toast.kivytoast.kivytoast import toast
 import re
-#from kivy.network.urlrequest import UrlRequest
+
 import requests
 from kivy.network.urlrequest import UrlRequest
 from baseclas.startscreen import StartScreen
 import json
 import sys
-from kivymd.uix.list import OneLineIconListItem, TwoLineIconListItem
+from kivymd.uix.list import TwoLineAvatarIconListItem, IRightBodyTouch, ILeftBody
+from kivymd.uix.selectioncontrol import MDCheckbox
+from kivy.uix.image import Image
 from kivymd.uix.label import MDLabel
+from kivymd.uix.dialog import MDDialog
 from baseclas.cardnews import CardNews
 from kivymd.uix.picker import MDDatePicker
 from datetime import datetime
 
-class BarberTwoLineIconListItem(TwoLineIconListItem):
+class MyCheckbox(IRightBodyTouch, MDCheckbox):
+    pass
+class MasterCheckbox(IRightBodyTouch, MDCheckbox):
+    pass
+
+class TimeCheckbox(IRightBodyTouch, MDCheckbox):
+    pass
+
+class MyAvatar(ILeftBody, Image):
+    pass
+
+class MasterTwoLineAvatarListItem(TwoLineAvatarIconListItem):
     lid = NumericProperty()
-    licon = StringProperty('')
+    ltype = StringProperty('')
+    lcheckstatus = BooleanProperty(False)
+    lmaster_text = StringProperty('')
+
+class TimeTwoLineAvatarListItem(TwoLineAvatarIconListItem):
+    lid = NumericProperty()
+    ltype = StringProperty('')
+    lcheckstatus = BooleanProperty(False)
+    lmaster_text = StringProperty('')
+    lservice_text = StringProperty('')
+
+class OrderTwoLineAvatarListItem(TwoLineAvatarIconListItem):
+    pass    
+
+class BarberTwoLineAvatarListItem(TwoLineAvatarIconListItem):
+    lid = NumericProperty()
+    ltype = StringProperty('')
+    lcheckstatus = BooleanProperty(False)
+    lservice_text = StringProperty('')
+    '''
     def on_touch_down(self, touch):
+
         if self.collide_point(*touch.pos):
-            toast(self.text+" id "+str(self.lid)+ '  '+str(self.uid))
-            for l in self.parent.children:
-                l.licon = 'checkbox-blank'
+            if self.ltype == 'мастер':
 
-            self.licon = 'checkbox-marked'
-            return True
+                dialog = MDDialog(
+                    title="Информация:",
+                    size_hint=(0.8, 0.3),
+                    text_button_ok="Yes",
+                    text=self.lmaster_text
+                    )
+                dialog.open()
+                return super().on_touch_down(touch)
+
+            elif self.ltype == 'услуга':
+                dialog = MDDialog(
+                    title="Информация:",
+                    size_hint=(0.8, 0.3),
+                    text_button_ok="Yes",
+                    text=self.lservice_text
+                    )
+                return True    
+            else:
+                return True
+
         return super().on_touch_down(touch)
-
+        '''
 class MyTextField(MDTextFieldRound):
     pattern = re.compile('[^0-9]')
     def insert_text(self, substring, from_undo=False):
@@ -68,7 +127,7 @@ class BarberApp(MDApp):
     lMaster  = BooleanProperty(False)
     lServiceTime = BooleanProperty(False)
     lTimeTable = StringProperty('')
-
+    dict_order = DictProperty()
 
     url_register = StringProperty('')
     url_listnews = StringProperty('')
@@ -76,11 +135,10 @@ class BarberApp(MDApp):
     url_lmasters = StringProperty('')
     url_lservices = StringProperty('')
     url_lservicestime = StringProperty('')
-
-    #dict_masters = DictProperty()
-    #dict_services = DictProperty()
-    #dict_servicestime = DictProperty()
-
+    url_host = StringProperty('')
+    url_getuserorders = StringProperty('')
+    # url_stopmaster = StringProperty('') not supported
+    url_createorder = StringProperty('')
 
     def __init__(self, **kvargs):
         super(BarberApp, self).__init__(**kvargs)
@@ -90,15 +148,28 @@ class BarberApp(MDApp):
 
         self.window = Window
         self.config = ConfigParser() 
-        
-        self.url_register = 'http://127.0.0.1:8000/api/v1/register/'
-        self.url_listnews = 'http://127.0.0.1:8000/api/v1/getlistnewsuser/'
-        self.url_userinfo = 'http://127.0.0.1:8000/api/v1/getuserinfo/'
-        self.url_lmasters = 'http://127.0.0.1:8000/api/v1/getlistmasters/'
-        self.url_lservices = 'http://127.0.0.1:8000/api/v1/getlistservices/'
-        self.url_lservicestime = 'http://127.0.0.1:8000/api/v1/getlisttime/'
+        '''
+        При переносе сервера на другой хост просто поменять значения self.url_host
+        '''
+        self.url_host = 'http://127.0.0.1:8000'  
+
+        self.url_register = self.url_host+'/api/v1/register/'
+        self.url_listnews = self.url_host+'/api/v1/getlistnewsuser/'
+        self.url_userinfo = self.url_host+'/api/v1/getuserinfo/'
+        self.url_lmasters = self.url_host+'/api/v1/getlistmasters/'
+        self.url_lservices = self.url_host+'/api/v1/getlistservices/'
+        self.url_lservicestime = self.url_host+'/api/v1/getlisttime/'
+        # self.url_stopmaster = self.url_host+'/api/v1/getstoptime/'  в это й версии не используется
+        self.url_createorder = self.url_host+'/api/v1/createorder/'
+        self.url_getuserorders = self.url_host+'/api/v1/getorders/'
+
         self.lCard = False
-        
+        self.dict_order = {
+            'master_id':None,
+            'service_id':None,
+            'servicetime_id':None,
+            'date':None
+        }
 
         self.manager = None
         
@@ -148,10 +219,10 @@ class BarberApp(MDApp):
             self.manager.current_screen.ids.btn_reg.text = 'Войти'
             self.manager.current_screen.ids.tel_text.text = self.PhoneNumber
 
+        self.date_init()
         self.get_list_masters()
         self.get_list_service()
-        self.get_list_servicetime()
-        self.set_date(datetime.date(datetime.today()))
+        self.get_user_orders()
         return self.screen
         
 
@@ -208,15 +279,14 @@ class BarberApp(MDApp):
     def success_getdata(self, request, result):
         
         if request.url == self.url_listnews:
-            if not self.lCard:
-                self.lCard = True
                 instance_grid = self.manager.current_screen.ids.grid_card
-                
+                instance_grid.clear_widgets()
                 for news in result:
                     instance_grid.add_widget(CardNews(
                         text_title = news['bTitleNews'],
                         text_body  = news['bTextNews']
                     ))
+
         elif request.url == self.url_lmasters:
             self.write_list_master(result)
 
@@ -225,28 +295,44 @@ class BarberApp(MDApp):
         
         elif request.url == self.url_lservicestime:
             self.write_list_timetable(result)
-            
+
+        elif request.url == self.url_createorder:
+            if request.resp_status == 201:                               
+                self.manager.current = 'base'
+                self.get_list_masters() 
+                self.get_list_service()
+                self.clear_time_list()
+                self.say_user('Заявка создана')
+            else:
+                self.say_user('Ошибка создания')
+
+        elif request.url == self.url_getuserorders:
+            self.write_list_userorders(result)
 
     def error_listnews(self, *args):
         a=0    
 
     def get_user_info(self):
         pass
+
     def get_user_orders(self):
-        pass
-    def create_user_order(self):
-        pass
+        header = {'Content-type':'application/Json', 'Authorization':'Token '+self.Token}
+        resp = UrlRequest(self.url_getuserorders, method='POST', req_headers=header, on_success=self.success_getdata)
+    
     def get_list_service(self):
         header = {'Content-type':'application/Json', 'Authorization':'Token '+self.Token}
         resp = UrlRequest(self.url_lservices, method='POST', req_headers=header, on_success=self.success_getdata) 
 
     def get_list_servicetime(self):
+        order_json = json.dumps(self.dict_order)
         header = {'Content-type':'application/Json', 'Authorization':'Token '+self.Token}
-        resp = UrlRequest(self.url_lservicestime, method='POST', req_headers=header, on_success=self.success_getdata) 
+        resp = UrlRequest(self.url_lservicestime, method='POST', req_headers=header, on_success=self.success_getdata, req_body=order_json) 
 
     def get_list_masters(self):
+        
+        order_json = json.dumps(self.dict_order)
         header = {'Content-type':'application/Json', 'Authorization':'Token '+self.Token}
-        resp = UrlRequest(self.url_lmasters, method='POST', req_headers=header, on_success=self.success_getdata)   
+        resp = UrlRequest(self.url_lmasters, method='POST', req_headers=header, on_success=self.success_getdata, req_body=order_json)   
 
     def sys_exit(self):
         sys.exit(0)    
@@ -270,60 +356,181 @@ class BarberApp(MDApp):
     
 
     def write_list_service(self, result):
-        listservice = self.manager.screens[2].ids.service.ids.common_list    
-        if not self.lService:
-            self.lService=True
-            for lService in result:
-                listservice.add_widget(BarberTwoLineIconListItem(
-                    text = lService['bService'],
-                    secondary_text = 'Стоимость услуги: '+ lService['bPrice']+' руб.',
-                    lid = lService['id'],
-                    licon = 'checkbox-blank'
-                ))
+        listservice = self.manager.screens[2].ids.service.ids.common_list
+        listservice.clear_widgets()    
+    
+        for lService in result:
+            listservice.add_widget(BarberTwoLineAvatarListItem(
+                text = lService['bService'],
+                secondary_text = 'Стоимость услуги: '+ lService['bPrice']+' руб.',
+                lid = lService['id'],
+                ltype = 'услуга',
+                lservice_text = lService['bService_text']
+            ))
     
     def write_list_master(self, result):
         listmaster = self.manager.screens[2].ids.master.ids.common_list
-        if not self.lMaster:
-            self.lMaster = True
-            for lMaster in result:
-                listmaster.add_widget(BarberTwoLineIconListItem(
-                    #icon ="language-python",
-                    text = lMaster['bMaster'],
-                    secondary_text = 'Краткое описание мастера',
-                    lid = lMaster['id'],
-                    licon = 'checkbox-blank'
+        listmaster.clear_widgets()
+
+        l_on = False
+        for lMaster in result:
+
+            if lMaster['bDateEnd']:
+                short_text = 'Отсутствует до '+datetime.strptime(lMaster['bDateEnd'], "%Y-%m-%d").strftime("%d %B %Y")
+                mess_text  = 'Приносим свои извинения мастер отсутствует до '+datetime.strptime(lMaster['bDateEnd'], "%Y-%m-%d").strftime("%d %B %Y")
+                l_on = True              
+            else:
+                short_text = 'Присутствует'
+                mess_text  = lMaster['bMaster_text']    
+                l_on = False
+
+            listmaster.add_widget(MasterTwoLineAvatarListItem(
+                text = lMaster['bMaster'],
+                secondary_text = short_text,
+                lid = lMaster['id'],
+                ltype = 'мастер',
+                lmaster_text = mess_text,
+                lcheckstatus = l_on
                 ))  
 
     def write_list_timetable(self, result):
         listtime = self.manager.screens[2].ids.timetable.ids.common_list
-        if not self.lServiceTime: 
-            self.lServiceTime = True
-            for lservicetime in result:
-                listtime.add_widget(BarberTwoLineIconListItem(
-                    text = 'Время оказания услуги: ' + lservicetime['bTime'],
-                    secondary_text = 'Занято или свободно',
-                    lid = lservicetime['id'],
-                    licon = 'checkbox-blank'
-                ))
+        listtime.clear_widgets()
+
+        #Заполняем
+        lcolor = [1,0,1,1] #default color
+        l_on = False
+        for lservicetime in result:
+            if lservicetime['bTimeStatus'] == 'Запрещено':
+                lcolor = [0.7,0,0,1]
+                l_on = True
+            elif lservicetime['bTimeStatus'] == 'Занято':
+                lcolor = [0.2,0,0.8,1]
+                l_on = True
+            elif lservicetime['bTimeStatus'] == 'Свободно':
+                lcolor = [0,0.7,0,1]
+                l_on =False
+
+            listtime.add_widget(TimeTwoLineAvatarListItem(
+                text = 'Время оказания услуги: ' + lservicetime['bTime'],
+                secondary_theme_text_color = 'Custom',
+                secondary_text_color = lcolor,
+                secondary_text = lservicetime['bTimeStatus'],
+                lcheckstatus = l_on,
+                lid = lservicetime['id'],
+                ltype = 'время'
+            ))
+        self.ltest=listtime.height
     
+    def write_list_userorders(self, result):
+        listtime = self.manager.screens[2].ids.user_order.ids.common_list
+        listtime.clear_widgets()
+
+        for order in result:
+            listtime.add_widget(OrderTwoLineAvatarListItem(
+                text = '2',
+                secondary_text = '1'
+            ))
+
     def update_date(self):
         date_dialog = MDDatePicker(
         callback=self.set_date)
         date_dialog.open()
-        # вызвать функцию обновления расписания
+        
+    def date_init(self):
+        lcurrent_date = datetime.date(datetime.today())
+        text_date = self.manager.screens[2].ids.master.ids.text_date
+        text_date.text = lcurrent_date.strftime("%d %B %Y")
+        self.dict_order['date'] = str(lcurrent_date)
 
     def set_date(self, *args):
-        text_date = self.manager.screens[2].ids.timetable.ids.text_date
-        text_date.text = args[0].strftime("%d %B %Y")
-        self.lTimeTable = str(args[0])
+        
+        self.update_text_date(args[0])
+        
+        
+        if self.date_comparison():
+            self.dict_order['master_id'] = None
+            self.dict_order['service_id'] = None
+            self.get_list_masters()
+            self.clear_time_list()
+            if self.dict_order.get('master_id') and self.dict_order.get('date'):
+                self.get_list_servicetime()
+        
+    def on_checkbox_active_m(self, lid, checkbox, value): 
+        if value:
+            self.dict_order['master_id'] = lid
+            if self.date_comparison():
+                if self.dict_order.get('master_id') and self.dict_order.get('date'):
+                    self.get_list_servicetime()
+                else:
+                    self.clear_time_list() 
+        else:
+            self.dict_order['master_id'] = None
+            self.clear_time_list() 
 
+    def on_checkbox_active_s(self, lid, checkbox, value):
+        if value:
+            self.dict_order['service_id'] = lid
+        else:
+            self.dict_order['service_id'] = None  
+
+    def on_checkbox_active_t(self, lid, checkbox, value):
+        if value:
+            self.dict_order['servicetime_id'] = lid
+        else:
+            self.dict_order['servicetime_id'] = None        
+
+    def date_comparison(self):
+        lcurrent_date = datetime.date(datetime.today())
+        ldateorder = datetime.date(datetime.strptime(self.dict_order['date'],'%Y-%m-%d'))
+
+        if ldateorder < lcurrent_date:
+            self.say_user('Прошлый период выбрать нельзя')
+            self.clear_time_list()
+            self.update_text_date(datetime.date(datetime.today()))
+            return False  
+        elif not self.dict_order.get('master_id'):
+            self.say_user('Выберите мастера') 
+            self.clear_time_list()
+            return False
+        return True
+
+    def update_text_date(self, ldate):
+        text_date = self.manager.screens[2].ids.master.ids.text_date
+        text_date.text = ldate.strftime("%d %B %Y")
+        self.dict_order['date'] = str(ldate)
     
-    def on_tab_switch(self, instance_tabs, instance_tab, instance_tab_label, tab_text):
+    def clear_time_list(self):
+        self.manager.screens[2].ids.timetable.ids.common_list.clear_widgets()       
         
-        if tab_text == 'Расписание':
-            if not instance_tab.ids.text_date:
-                instance_tab.ids.text_date = self.lTimeTable
-        # получим данные о расписании с сервера        
+    def show_advanced_info(self, dialog_text):
+        dialog = MDDialog(
+            title="Информация:",
+            size_hint=(0.8, 0.3),
+            text_button_ok="Закрыть",
+            text=dialog_text
+            )
+        dialog.open()
+
+    def create_user_order(self):
         
+        if not self.dict_order.get('master_id'):
+            self.say_user('Выберите мастера')
+            return False            
+        elif not self.dict_order.get('service_id'):
+            self.say_user('Выберите услугу')   
+            return False
+        elif not self.dict_order.get('servicetime_id'):
+            self.say_user('Выберите время')
+            return False
+
+        order_json = json.dumps(self.dict_order)
+        header = {'Content-type':'application/Json', 'Authorization':'Token '+self.Token}
+        resp = UrlRequest(self.url_createorder, 
+                method='POST', 
+                req_headers=header, 
+                on_success=self.success_getdata, 
+                req_body=order_json) 
+
 if __name__ == '__main__':
     BarberApp().run()

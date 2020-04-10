@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 
 #:import Tab baseclas.tabs.Tab
+#:import TabMasterDate baseclas.tabs.TabMasterDate
 
 <Tab>:
-
     BoxLayout:
         orientation: 'vertical'
         spacing: dp(5)
 
         ScrollView:
             id: scroll
-            size_hint: 1, 1
+            size_hint: 1, 1          
             do_scroll_x: False
 
             MDList:
-                id: common_list
+                id: common_list           
 
-<TabTimeTable>:
+<TabMasterDate>:
     BoxLayout:
         orientation: 'vertical'
         spacing: dp(5)
@@ -24,13 +24,15 @@
         BoxLayout:
             size_hint_y: None
             height: dp(30)
-            spaicing: dp(5)
+            padding: dp(20)
             MDLabel:
                 id: text_date
                 text: ''   
-                font_style: 'H6'
+                font_style: 'H5'
                 halign: 'center'
+                pos_hint: {'y':1}
                 on_touch_down: app.update_date()
+                bold: True
 
         ScrollView:
             id: scroll
@@ -41,7 +43,39 @@
                 id: common_list
 
 
-<BarberTwoLineIconListItem>:
-    IconLeftWidget:
-        icon: root.licon
+<BarberTwoLineAvatarListItem>:
+    id: twoline
+    on_press: app.show_advanced_info(twoline.lservice_text)
+    MyAvatar:
+        source: "data/logo/kivy-icon-128.png"
+    MyCheckbox:
+        group: 'servicegroup'
+        disabled: twoline.lcheckstatus
+        on_active: app.on_checkbox_active_s(twoline.lid, *args)
+        
+<MasterTwoLineAvatarListItem>:
+    id: mastertwoline
+    on_press: app.show_advanced_info(mastertwoline.lmaster_text)
+    MyAvatar:
+        source: "data/logo/kivy-icon-128.png"
+    MasterCheckbox:
+        group: 'mastergroup'
+        disabled: mastertwoline.lcheckstatus
+        on_active: app.on_checkbox_active_m(mastertwoline.lid, *args)    
+
+<TimeTwoLineAvatarListItem>:
+    id: timetwoline
     
+    MyAvatar:
+        source: "data/logo/kivy-icon-128.png"
+    TimeCheckbox:
+        group: 'timegroup'
+        disabled: timetwoline.lcheckstatus
+        on_active: app.on_checkbox_active_t(timetwoline.lid, *args) 
+
+
+<OrderTwoLineAvatarListItem>:
+    id: ordertwoline
+    
+    MyAvatar:
+        source: "data/logo/kivy-icon-128.png"
