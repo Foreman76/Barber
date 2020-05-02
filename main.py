@@ -206,10 +206,11 @@ class BarberApp(MDApp):
         return self.screen
 
     def on_start(self):
+        locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
         self.date_init()
         #Config.set('kivy', 'keyboard_mode', 'systemandmulti')
         #print(locale.locale_alias)
-        #locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
+        
 
     def load_all_kv_files(self, directory_kv_files):
         for kv_file in os.listdir(directory_kv_files):
