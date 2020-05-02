@@ -3,3 +3,6 @@ testclass.py
 teststst.py
 barberstyle.py
 barber.ini
+.buildozer
+.vscode
+*.pyc

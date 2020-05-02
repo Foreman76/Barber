@@ -3,18 +3,48 @@
 #:import Tab baseclas.tabs.Tab
 #:import TabMasterDate baseclas.tabs.TabMasterDate
 
+
+#*******************************************************************
+
 <Tab>:
+    orientation: 'vertical'
     BoxLayout:
         orientation: 'vertical'
+        size_hint_y: None
+        height: self.minimum_height
+        padding: dp(5)
+        MDRoundFlatButton:
+            id: text_date
+            text: ''
+            pos_hint: {'center_x':.5}
+            size_hint_x: 1
+            font_size: dp(20)
+            on_release: app.update_date()
+    BoxLayout:
+        orientation: 'vertical'
+        #size_hint_y: .4
+        #pos_hint: {'center_x':.5, 'center_y':.5}
         spacing: dp(5)
 
-        ScrollView:
-            id: scroll
-            size_hint: 1, 1          
+        ScrollView:    
             do_scroll_x: False
 
             MDList:
-                id: common_list           
+                id: common_list
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: None
+        height: self.minimum_height
+        padding: dp(5)
+        MDFillRoundFlatButton:
+            text: 'Отправить заявку'
+            pos_hint: {'center_x':.5}
+            size_hint_x: 1
+            #increment_width: dp(300)
+            size_hint: .8, None
+            on_release: app.create_user_order()
+           
+#********************************************************************
 
 <TabMasterDate>:
     BoxLayout:
@@ -25,13 +55,13 @@
             size_hint_y: None
             height: dp(30)
             padding: dp(20)
-            MDLabel:
+            MDRaisedButton:
                 id: text_date
                 text: ''   
                 font_style: 'H5'
                 halign: 'center'
                 pos_hint: {'y':1}
-                on_touch_down: app.update_date()
+                on_release: app.update_date()
                 bold: True
 
         ScrollView:
@@ -41,6 +71,8 @@
 
             MDList:
                 id: common_list
+
+
 
 
 <BarberTwoLineAvatarListItem>:
@@ -74,7 +106,7 @@
         on_active: app.on_checkbox_active_t(timetwoline.lid, *args) 
 
 
-<OrderTwoLineAvatarListItem>:
+<OrderLine>:
     id: ordertwoline
     
     MyAvatar:

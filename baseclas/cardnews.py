@@ -5,3 +5,4 @@ from kivy.properties import StringProperty
 class CardNews(MDCard):
     text_title = StringProperty('Title')
     text_body  = StringProperty('Body news')
+    path_image = StringProperty('')

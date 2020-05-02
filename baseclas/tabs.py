@@ -2,8 +2,9 @@
 
 from kivymd.uix.tab import MDTabsBase
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.boxlayout import BoxLayout
 
-class Tab(FloatLayout, MDTabsBase):
+class Tab(BoxLayout, MDTabsBase):
     pass
 
 class TabMasterDate(FloatLayout, MDTabsBase):
