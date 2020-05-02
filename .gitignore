@@ -2,7 +2,7 @@ test.py
 testclass.py
 teststst.py
 barberstyle.py
-barber.ini
+*.ini
 .buildozer
 .vscode
 *.pyc
