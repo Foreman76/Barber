@@ -36,7 +36,8 @@ import certifi as cert
 
 
 
-__version__ = '1.0.2'
+
+__version__ = '1.0.3'
 
 
 class MyCheckbox(IRightBodyTouch, MDCheckbox):
@@ -100,11 +101,6 @@ class BarberApp(MDApp):
     PhoneNumber = StringProperty('')
     Token = StringProperty('')
     FirstName = StringProperty('')
-    #lCard = BooleanProperty(False)
-    #lService = BooleanProperty(False)
-    #lMaster  = BooleanProperty(False)
-    #lServiceTime = BooleanProperty(False)
-    #lTimeTable = StringProperty('')
     dict_order = DictProperty()
 
     url_register = StringProperty('')
@@ -121,6 +117,8 @@ class BarberApp(MDApp):
     screen = ObjectProperty()
     manager = ObjectProperty()
     progress = ObjectProperty()
+    dialog = None
+
     def __init__(self, **kvargs):
         super(BarberApp, self).__init__(**kvargs)
         Window.bind(on_keyboard=self.events_program)
@@ -163,8 +161,6 @@ class BarberApp(MDApp):
 
         return True
     def build_config(self, config):
-        #locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
-
         config.adddefaultsection('General')
         config.setdefault('General', 'language', 'ru')  
         config.setdefault('General', 'token', '')  
@@ -206,12 +202,14 @@ class BarberApp(MDApp):
         return self.screen
 
     def on_start(self):
-        locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
-        self.date_init()
-        #Config.set('kivy', 'keyboard_mode', 'systemandmulti')
-        #print(locale.locale_alias)
-        
 
+        try:
+            locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
+        except:
+            pass
+        
+        self.date_init()
+ 
     def load_all_kv_files(self, directory_kv_files):
         for kv_file in os.listdir(directory_kv_files):
             kv_file = os.path.join(directory_kv_files, kv_file)
@@ -450,7 +448,7 @@ class BarberApp(MDApp):
         instance_grid.clear_widgets()
         for news in result:
             instance_grid.add_widget(CardNews(
-                path_image = self.directory+"/data/logonews.png",
+                path_image = self.directory+"/data/image/logonews.png",
                 text_title = news['bTitleNews'],
                 text_body  = news['bTextNews']
             ))
@@ -467,11 +465,12 @@ class BarberApp(MDApp):
         
     def date_init(self):
         lcurrent_date = datetime.date(datetime.today())
-        self.manager.screens[2].ids.user_order.ids.text_date.text = lcurrent_date.strftime("%d %B %Y")
-        self.manager.screens[2].ids.master.ids.text_date.text = lcurrent_date.strftime("%d %B %Y")
-        self.manager.screens[2].ids.service.ids.text_date.text = lcurrent_date.strftime("%d %B %Y")
-        self.manager.screens[2].ids.timetable.ids.text_date.text = lcurrent_date.strftime("%d %B %Y")
-        
+        list_tab_name = ['user_order','master','service','timetable']
+        scr = self.manager.screens[2]
+        for tab_name in list_tab_name:
+            tab = scr.ids[tab_name]
+            tab.ids.text_date.text = lcurrent_date.strftime("%d %B %Y")
+           
         self.dict_order['date'] = str(lcurrent_date)
 
     def set_date(self, *args):
@@ -537,13 +536,12 @@ class BarberApp(MDApp):
         self.manager.screens[2].ids.timetable.ids.common_list.clear_widgets()       
         
     def show_advanced_info(self, dialog_text):
-        dialog = MDDialog(
+        self.dialog = MDDialog(
             title="Информация:",
             size_hint=(0.8, 0.5),
-            text_button_ok="Закрыть",
             text=dialog_text
             )
-        dialog.open()
+        self.dialog.open()
 
     def create_user_order(self):
         
@@ -565,5 +563,5 @@ class BarberApp(MDApp):
                 on_success=self.success_getdata, 
                 req_body=order_json, ca_file=cert.where(), verify=True) 
 
-if __name__ == '__main__':
+if __name__ in ['__main__','__android__']:
     BarberApp().run()

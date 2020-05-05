@@ -3,6 +3,6 @@ testclass.py
 teststst.py
 barberstyle.py
 *.ini
-.buildozer
-.vscode
+.buildozer/
+.vscode/
 *.pyc

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-
+##:import NavDrawer baseclas.navdrawer.NavDrawer
 #:import BaseScreen baseclas.basescreen.BaseScreen
 #:import LoginScreen baseclas.loginscreen.LoginScreen
 #:import OrderScreen baseclas.orderscreen.OrderScreen
@@ -9,11 +9,11 @@
 
     MDToolbar:
         id: action_bar
-        #background_color: app.theme_cls.primary_color
+        background_color: app.theme_cls.primary_color
         title: app.title
-        left_action_items: [['check-bold', lambda x: 'git']]
+        left_action_items: [['menu', lambda x: None]]
         elevation: 10
-        #md_bg_color: app.theme_cls.primary_color
+        md_bg_color: app.theme_cls.primary_color
         pos_hint: {"top": 1}
         
     ScreenManager:
@@ -32,5 +32,9 @@
         OrderScreen:
             id: order 
             on_enter: app.sm_on_enter()
-    
+
+    #MDNavigationDrawer:
+    #    id: nav_drawer
+    #
+    #    NavDrawer:
             

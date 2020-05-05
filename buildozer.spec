@@ -29,15 +29,15 @@ version.regex = __version__ = ['"](.*)['"]
 version.filename = %(source.dir)s/main.py
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,kivy==1.11.1 , KivyMD==0.104.0, pillow, pygments, git+https://github.com/certifi/python-certifi.git
+requirements = python3,kivy==1.11.1 , kivyMD==0.104.0, pillow, pygments, git+https://github.com/certifi/python-certifi.git
 #,git+https://github.com/HeaTTheatR/KivyMD.git,pillow,pygments
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
 #requirements.source.kivymd = ../../kivymd
 # (str) Presplash of the application
-presplash.filename = %(source.dir)s/data/presplash.jpeg
+presplash.filename = %(source.dir)s/data/image/presplash.jpeg
 # (str) Icon of the application
-icon.filename = %(source.dir)s/data/kivy-icon.png
+icon.filename = %(source.dir)s/data/image/logo.png
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = portrait
 # (bool) Indicate if the application should be fullscreen or not

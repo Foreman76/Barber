@@ -3,25 +3,33 @@
 <OrderScreen>:
     name: 'order'
 
-    MDTabs:
-        id: order_tabs
-        tab_display_mode: 'text' 
-            
-        Tab:
-            id: user_order
-            text: 'Заявки'
+    BoxLayout:
+        orientation:'vertical'
+        MDTabs:
+            id: order_tabs
+            tab_display_mode: 'text' 
+                
+            Tab:
+                id: user_order
+                text: 'Заявки'
 
-        Tab:
-            id: master
-            text: "Мастера"
+            Tab:
+                id: master
+                text: "Мастера"
 
-        Tab:
-            id: service
-            text: 'Услуги'
+            Tab:
+                id: service
+                text: 'Услуги'
 
-        Tab:
-            id: timetable
-            text: 'Время' 
+            Tab:
+                id: timetable
+                text: 'Время' 
     
-    
+        BoxLayout:
+            size_hint_y: None
+            height: self.minimum_height
+            MDRaisedButton:
+                text: 'Отправить заявку'
+                size_hint_x: 1
+                on_release: app.create_user_order()
    

@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
 #:import Tab baseclas.tabs.Tab
-#:import TabMasterDate baseclas.tabs.TabMasterDate
-
 
 #*******************************************************************
 
 <Tab>:
+   
     orientation: 'vertical'
     BoxLayout:
         orientation: 'vertical'
@@ -17,13 +16,11 @@
             id: text_date
             text: ''
             pos_hint: {'center_x':.5}
-            size_hint_x: 1
-            font_size: dp(15)
+            increment_width: dp(164)
+            font_size: dp(16)
             on_release: app.update_date()
     BoxLayout:
         orientation: 'vertical'
-        #size_hint_y: .4
-        #pos_hint: {'center_x':.5, 'center_y':.5}
         spacing: dp(5)
 
         ScrollView:    
@@ -31,46 +28,10 @@
 
             MDList:
                 id: common_list
-    BoxLayout:
-        orientation: 'vertical'
-        size_hint_y: None
-        height: self.minimum_height
-        padding: dp(5)
-        MDFillRoundFlatButton:
-            text: 'Отправить заявку'
-            pos_hint: {'center_x':.5}
-            size_hint_x: 1
-            #increment_width: dp(300)
-            #size_hint: .8, None
-            on_release: app.create_user_order()
+    
            
 #********************************************************************
 
-<TabMasterDate>:
-    BoxLayout:
-        orientation: 'vertical'
-        spacing: dp(5)
-
-        BoxLayout:
-            size_hint_y: None
-            height: dp(30)
-            padding: dp(20)
-            MDRaisedButton:
-                id: text_date
-                text: ''   
-                font_style: 'H5'
-                halign: 'center'
-                pos_hint: {'y':1}
-                on_release: app.update_date()
-                bold: True
-
-        ScrollView:
-            id: scroll
-            size_hint: 1, 1
-            do_scroll_x: False
-
-            MDList:
-                id: common_list
 
 
 
@@ -79,7 +40,7 @@
     id: twoline
     on_press: app.show_advanced_info(twoline.lservice_text)
     MyAvatar:
-        source: "data/logo/kivy-icon-128.png"
+        source: app.directory+"/data/image/service.png"
     MyCheckbox:
         group: 'servicegroup'
         disabled: twoline.lcheckstatus
@@ -89,7 +50,7 @@
     id: mastertwoline
     on_press: app.show_advanced_info(mastertwoline.lmaster_text)
     MyAvatar:
-        source: "data/logo/kivy-icon-128.png"
+        source: app.directory+"/data/image/master.png"
     MasterCheckbox:
         group: 'mastergroup'
         disabled: mastertwoline.lcheckstatus
@@ -99,7 +60,7 @@
     id: timetwoline
     
     MyAvatar:
-        source: "data/logo/kivy-icon-128.png"
+        source: app.directory+"/data/image/time.png"
     TimeCheckbox:
         group: 'timegroup'
         disabled: timetwoline.lcheckstatus
@@ -110,4 +71,4 @@
     id: ordertwoline
     
     MyAvatar:
-        source: "data/logo/kivy-icon-128.png"
+        source: app.directory+"/data/image/order.png"
