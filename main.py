@@ -10,7 +10,7 @@ import sys
 import os
 import locale
 from kivymd.app import MDApp
-from kivymd.uix.textfield import MDTextFieldRound
+from kivymd.uix.textfield import MDTextField
 from kivy.lang import Builder
 from kivy.config import ConfigParser
 from kivy.properties import *
@@ -74,25 +74,25 @@ class BarberTwoLineAvatarListItem(TwoLineAvatarIconListItem):
     lservice_text = StringProperty('')
     resp = ObjectProperty()
 
-class MyTextField(MDTextFieldRound):
+class MyTextField(MDTextField):
     pattern = re.compile('[^0-9]')
     def insert_text(self, substring, from_undo=False):
         if len(self.text) >= 14:
-            return super(MDTextFieldRound, self).insert_text('', from_undo=from_undo)
+            return super(MDTextField, self).insert_text('', from_undo=from_undo)
 
         s = re.sub(self.pattern, '', substring)
 
         if s:
             if len(self.text) == 6:
                 self.text = self.text+')'
-            return super(MDTextFieldRound, self).insert_text(substring, from_undo=from_undo)
+            return super(MDTextField, self).insert_text(substring, from_undo=from_undo)
         else:
-            return super(MDTextFieldRound, self).insert_text(s, from_undo=from_undo)    
+            return super(MDTextField, self).insert_text(s, from_undo=from_undo)    
 
     def do_backspace(self, from_undo=False, mode='bkspc'):
         if len(self.text) == 3:
             return False   
-        return super(MDTextFieldRound, self).do_backspace(from_undo, mode)
+        return super(MDTextField, self).do_backspace(from_undo, mode)
 
 
 class BarberApp(MDApp):
@@ -123,8 +123,8 @@ class BarberApp(MDApp):
         super(BarberApp, self).__init__(**kvargs)
         Window.bind(on_keyboard=self.events_program)
         Window.soft_input_mode = 'below_target'
-        #Window.size = (480, 853)
-
+        #Window.size = (480, 753)
+        #python main.py -m screen:phone_samsung_galaxy_s5, portrait,scale=.75
         self.window = Window
         self.config = ConfigParser() 
         '''
@@ -237,7 +237,7 @@ class BarberApp(MDApp):
         header = {'Content-type':'application/Json'}
         self.resp = UrlRequest(self.url_register, method='POST', 
                 req_headers=header, on_success=self.success_getdata, req_body=param_json,
-                on_error = self.error_request, ca_file=cert.where(), verify=True)
+                on_error = self.error_request, ca_file=cert.where(), verify=True,timeout=1)
 
     def say_user(self, errText):
         toast(errText)
@@ -279,7 +279,7 @@ class BarberApp(MDApp):
 
         elif request.url == self.url_createorder:
             if request.resp_status == 201:                               
-                self.manager.current = 'base'
+                self.manager.current_screen.ids.order_tabs.carousel.load_slide(self.manager.current_screen.ids.user_order)
                 self.progress.open()
                 Clock.schedule_once(lambda dt: self.get_total_data(), 1)
                 self.clear_time_list()

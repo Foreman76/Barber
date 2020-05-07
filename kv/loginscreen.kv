@@ -4,39 +4,51 @@
     name: 'login'
     FitImage:
         source: app.directory+"/data/image/loginbg.png"
-    
-    #canvas:
-    #    Rectangle:
-    #        pos: self.pos
-    #        size: self.size
-            #source: app.directory+"/loginbg.png"
-
-        
-    
+        opacity: .7 
+    Image:
+        source: app.directory+"/data/image/logo.png"
+        pos_hint: {'center_x':.5,'center_y':.8}
+        size_hint: .5,.5
+       
     BoxLayout:
+        orientation:'vertical'
+        size_hint_y: None
+        height: self.minimum_height
+        pos_hint: {'center_y':.55}
+        MDLabel:
+            text: '[b]Barber Style[/b]'
+            font_style: 'H4'
+            halign: 'center'
+            markup: True
 
-        orientation: 'vertical'
-        spacing: dp(10)
-        size_hint: (0.6, 0.2) 
-        pos_hint: {'center_x': .5, "center_y": .5}
-
-        
-
+    BoxLayout:
+        orientation: "vertical"
+        size_hint_y: None
+        height: self.minimum_height
+        pos_hint: {'center_x':.5, 'center_y':.4}
+        spacing: 10
+ 
         MyTextField:
+            #hint_text: "Телефон"
             id: tel_text
-            icon_left: "phone"
-            hint_text: "Телефон"
+            text: '+7('
+            helper_text: "Введите номер телефона по шаблону"
+            helper_text_mode: "on_focus"
+            pos_hint: {'center_x':.5}
+            size_hint_x: .6
+            halign: 'center'
             font_size: '18sp'
-            size_hint_x: .9
-            pos_hint: {"center_x": .5}
-            normal_color: 1, 1, 1, 1
-            color_active: 1, 1, 1, 1
-            text: '+7(' 
-            
+            color_mode: 'custom'
+            line_color_focus: 0, 0, 0, 1
+            line_color_normal: 0, 0, 0, 1
 
-        MDFillRoundFlatIconButton:
+        MDRaisedButton:
             id: btn_reg
-            icon: "account"
-            text: 'Регистрация'   
-            size_hint_x: 1
+            text: 'Регистрация'
+            #font_size: '18sp'
+            pos_hint: {'center_x':.5}
+            #text_color: 0, 0, 0, 1
+            #md_bg_color: 1, 0,0,1
             on_press: app.registration(self.text)
+        
+           
