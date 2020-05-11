@@ -28,6 +28,7 @@ from kivymd.uix.label import MDLabel
 from kivymd.uix.dialog import MDDialog
 from baseclas.cardnews import CardNews
 from kivymd.uix.picker import MDDatePicker
+from kivymd.uix.button import MDFlatButton
 from datetime import datetime
 from kivy.config import Config
 from kivy.clock import Clock
@@ -254,7 +255,7 @@ class BarberApp(MDApp):
         self.manager.current = 'base'
         self.progress.open()
         Clock.schedule_once(lambda dt:self.get_total_data(), .5)
-
+       
     # Общая обработка сети    
     def success_getdata(self, request, result):
         
@@ -269,13 +270,13 @@ class BarberApp(MDApp):
             self.progress.dismiss()
             
         elif request.url == self.url_lmasters:
-            self.write_list_master(result)
+            self.write_list_master(result, lstatus=True)
 
         elif request.url == self.url_lservices:
             self.write_list_service(result)
         
         elif request.url == self.url_lservicestime:
-            self.write_list_timetable(result)
+            self.write_list_timetable(result, lstatus=True)
 
         elif request.url == self.url_createorder:
             if request.resp_status == 201:                               
@@ -329,6 +330,7 @@ class BarberApp(MDApp):
 
     def get_list_masters(self):
         
+
         order_json = json.dumps(self.dict_order)
         header = {'Content-type':'application/Json', 'Authorization':'Token '+self.Token}
         self.resp = UrlRequest(self.url_lmasters, method='POST', req_headers=header, 
@@ -378,7 +380,7 @@ class BarberApp(MDApp):
                 lservice_text = lService['bService_text']
             ))
     
-    def write_list_master(self, result):
+    def write_list_master(self, result, lstatus=False):
         listmaster = self.manager.screens[2].ids.master.ids.common_list
         listmaster.clear_widgets()
 
@@ -402,8 +404,11 @@ class BarberApp(MDApp):
                 lmaster_text = mess_text,
                 lcheckstatus = l_on
                 ))  
+        if lstatus:
+            self.progress.dismiss()
+            self.manager.current_screen.ids.order_tabs.carousel.load_slide(self.manager.current_screen.ids.master)
 
-    def write_list_timetable(self, result):
+    def write_list_timetable(self, result, lstatus=False):
         listtime = self.manager.screens[2].ids.timetable.ids.common_list
         listtime.clear_widgets()
 
@@ -430,8 +435,10 @@ class BarberApp(MDApp):
                 lid = lservicetime['id'],
                 ltype = 'время'
             ))
-        self.ltest=listtime.height
-    
+        if lstatus:
+            self.progress.dismiss()
+            self.manager.current_screen.ids.order_tabs.carousel.load_slide(self.manager.current_screen.ids.timetable)
+
     def write_list_userorders(self, result):
         listtime = self.manager.screens[2].ids.user_order.ids.common_list
         listtime.clear_widgets()
@@ -481,16 +488,20 @@ class BarberApp(MDApp):
         if self.date_comparison():
             self.dict_order['master_id'] = None
             self.dict_order['service_id'] = None
+            self.progress.text_title = 'Мастера...'
+            self.progress.open()
             self.get_list_masters()
             self.clear_time_list()
-            if self.dict_order.get('master_id') and self.dict_order.get('date'):
-                self.get_list_servicetime()
+            #if self.dict_order.get('master_id') and self.dict_order.get('date'):
+            #    self.get_list_servicetime()
         
     def on_checkbox_active_m(self, lid, checkbox, value): 
         if value:
             self.dict_order['master_id'] = lid
             if self.date_comparison():
                 if self.dict_order.get('master_id') and self.dict_order.get('date'):
+                    self.progress.text_title = 'Время...'
+                    self.progress.open()
                     Clock.schedule_once(lambda dt: self.get_list_servicetime(), 0.5)
                 else:
                     self.clear_time_list() 
@@ -519,10 +530,10 @@ class BarberApp(MDApp):
             self.clear_time_list()
             self.update_text_date(datetime.date(datetime.today()))
             return False  
-        elif not self.dict_order.get('master_id'):
-            self.say_user('Выберите мастера') 
-            self.clear_time_list()
-            return False
+        #elif not self.dict_order.get('master_id'):
+        #    self.say_user('Выберите мастера') 
+        #    self.clear_time_list()
+        #    return False
         return True
 
     def update_text_date(self, ldate):
@@ -536,13 +547,23 @@ class BarberApp(MDApp):
         self.manager.screens[2].ids.timetable.ids.common_list.clear_widgets()       
         
     def show_advanced_info(self, dialog_text):
-        self.dialog = MDDialog(
-            title="Информация:",
-            size_hint=(0.8, 0.5),
-            text=dialog_text
-            )
-        self.dialog.open()
-
+        if not self.dialog:
+            self.dialog = MDDialog(
+                title="Информация:",
+                size_hint=(0.8, 0.5),
+                text=dialog_text,
+                buttons=[
+                    MDFlatButton(
+                        text="Закрыть", text_color=self.theme_cls.primary_color, on_release=self.close_dialog
+                    )]
+                )
+            self.dialog.open()
+        
+    
+    
+    def close_dialog(self, *args):
+        self.dialog.dismiss()
+        self.dialog = None
     def create_user_order(self):
         
         if not self.dict_order.get('master_id'):
